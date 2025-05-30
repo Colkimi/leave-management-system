@@ -13,6 +13,7 @@ import { LoadAdjustmentModule } from './load-adjustment/load-adjustment.module';
 import { ConfigModule } from '@nestjs/config';
 import { DatabaseModule } from './database/database.module';
 import { SeedModule } from './seed/seed.module';
+import { LogsModule } from './logs/logs.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { SeedModule } from './seed/seed.module';
     LeaveHistoryModule,
     LoadAdjustmentModule,
     DatabaseModule,
+    LogsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

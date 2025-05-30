@@ -43,10 +43,8 @@ export class LeaveApplicationController {
     return this.leaveApplicationService.update(id, updateLeaveApplicationDto);
   }
 
-
   @Delete(':id')
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.leaveApplicationService.remove(id);
   }
 }
-

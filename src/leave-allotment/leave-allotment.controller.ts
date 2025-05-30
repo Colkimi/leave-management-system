@@ -45,6 +45,4 @@ export class LeaveAllotmentController {
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.leaveAllotmentService.remove(id);
   }
-
 }
-

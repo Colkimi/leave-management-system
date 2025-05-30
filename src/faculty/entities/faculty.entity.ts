@@ -2,8 +2,14 @@ import { Department } from 'src/department/entities/department.entity';
 import { Designation } from 'src/designation/entities/designation.entity';
 import { Allotment } from 'src/leave-allotment/entities/leave-allotment.entity';
 import { Application } from 'src/leave-application/entities/leave-application.entity';
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, OneToMany } from 'typeorm';
-
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  JoinColumn,
+  OneToMany,
+} from 'typeorm';
 
 @Entity()
 export class Faculty {
@@ -34,18 +40,17 @@ export class Faculty {
   })
   created_at: Date;
 
-  @ManyToOne(() => Department, department => department.faculties)
+  @ManyToOne(() => Department, (department) => department.faculties)
   @JoinColumn({ name: 'department_id' })
   department: Department;
 
-  @ManyToOne(() => Designation, designation => designation.faculties)
+  @ManyToOne(() => Designation, (designation) => designation.faculties)
   @JoinColumn({ name: 'designation_id' })
   designation: Designation;
 
-  @OneToMany(() => Application, application => application.faculty)
+  @OneToMany(() => Application, (application) => application.faculty)
   leaveApplications: Application[];
 
-  @OneToMany(() => Allotment, Allotment => Allotment.faculty)
+  @OneToMany(() => Allotment, (Allotment) => Allotment.faculty)
   leaveAllotments: Allotment[];
-
 }

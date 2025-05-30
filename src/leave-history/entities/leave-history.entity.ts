@@ -7,7 +7,7 @@ export class History {
 
   @Column({ type: 'varchar', length: 50 })
   leave_type: string;
-    
+
   @Column({
     type: 'timestamp',
     default: () => 'CURRENT_TIMESTAMP',
@@ -29,5 +29,5 @@ export class History {
     type: 'timestamp',
     default: () => 'CURRENT_TIMESTAMP',
   })
-    created_at: Date;
+  created_at: Date;
 }

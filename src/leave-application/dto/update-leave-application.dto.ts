@@ -8,4 +8,6 @@ import {
   IsNotEmpty,
 } from 'class-validator';
 
-export class UpdateLeaveApplicationDto extends PartialType(CreateLeaveApplicationDto,) {}
+export class UpdateLeaveApplicationDto extends PartialType(
+  CreateLeaveApplicationDto,
+) {}

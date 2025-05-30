@@ -1,4 +1,9 @@
-import { Injectable, NestMiddleware } from '@nestjs/common';
+import {
+  Injectable,
+  MiddlewareConsumer,
+  NestMiddleware,
+  NestModule,
+} from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
 
 // Middleware to log requests
@@ -27,5 +32,20 @@ export class LoggerMiddleware implements NestMiddleware {
     } as Response['end'];
 
     next();
+  }
+}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(LoggerMiddleware)
+      .forRoutes(
+        'administrator',
+        'department',
+        'designation',
+        'faculty',
+        'leave-allotment',
+        'leave-application',
+        'leave-history',
+      );
   }
 }

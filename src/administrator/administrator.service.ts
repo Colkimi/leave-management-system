@@ -71,6 +71,8 @@ export class AdministratorService {
     if (res.affected === 0) {
       throw new NotFoundException(`admin with admin id ${admin_id} not found`);
     }
-    return {message: `admin with id ${admin_id} successfully removed from database`};
+    return {
+      message: `admin with id ${admin_id} successfully removed from database`,
+    };
   }
 }

@@ -8,13 +8,13 @@ export class Department {
 
   @Column({ type: 'varchar', length: 255 })
   department_name: string;
-   
+
   @Column({
     type: 'timestamp',
     default: () => 'CURRENT_TIMESTAMP',
   })
   created_at: Date;
 
-  @OneToMany(() => Faculty, faculty => faculty.department)
+  @OneToMany(() => Faculty, (faculty) => faculty.department)
   faculties: Faculty[];
 }

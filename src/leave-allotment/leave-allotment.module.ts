@@ -5,9 +5,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Allotment } from './entities/leave-allotment.entity';
 import { DatabaseModule } from 'src/database/database.module';
 
-
 @Module({
-  imports: [ DatabaseModule, TypeOrmModule.forFeature([Allotment])],
+  imports: [DatabaseModule, TypeOrmModule.forFeature([Allotment])],
   controllers: [LeaveAllotmentController],
   providers: [LeaveAllotmentService],
 })

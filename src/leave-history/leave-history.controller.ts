@@ -40,7 +40,7 @@ export class LeaveHistoryController {
     (updateAdministratorDto as any).admin_id = id;
     return this.leaveHistoryService.update(id, updateAdministratorDto);
   }
-  
+
   @Delete(':id')
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.leaveHistoryService.remove(id);

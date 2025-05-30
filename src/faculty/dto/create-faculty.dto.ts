@@ -7,11 +7,10 @@ import {
   IsDate,
 } from 'class-validator';
 export class CreateFacultyDto {
- 
   @IsNumber()
   @IsOptional()
   faculty_id: number;
-  
+
   @IsString()
   faculty_name: string;
 

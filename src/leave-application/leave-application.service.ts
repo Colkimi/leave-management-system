@@ -50,19 +50,24 @@ export class LeaveApplicationService {
     return application;
   }
 
-  async update(leave_id: number, UpdateLeaveApplicationDto: UpdateLeaveApplicationDto) {
+  async update(
+    leave_id: number,
+    UpdateLeaveApplicationDto: UpdateLeaveApplicationDto,
+  ) {
     const application = await this.applicationRepository.findOne({
       where: { leave_id },
     });
     if (!application) {
       throw new NotFoundException(`application with id ${leave_id} not found`);
     }
-    const leave_type = UpdateLeaveApplicationDto.leave_type ?? application.leave_type;
-    const start_date = UpdateLeaveApplicationDto.start_date ?? application.start_date;
+    const leave_type =
+      UpdateLeaveApplicationDto.leave_type ?? application.leave_type;
+    const start_date =
+      UpdateLeaveApplicationDto.start_date ?? application.start_date;
     const end_date = UpdateLeaveApplicationDto.end_date ?? application.end_date;
     const status = UpdateLeaveApplicationDto.status ?? application.status;
     const reason = UpdateLeaveApplicationDto.reason ?? application.reason;
-    [leave_type,start_date,end_date,status,reason];
+    [leave_type, start_date, end_date, status, reason];
     await this.applicationRepository.findOne({ where: { leave_id } });
     return this.applicationRepository.save(UpdateLeaveApplicationDto);
   }
@@ -70,8 +75,12 @@ export class LeaveApplicationService {
   async remove(leave_id: number) {
     const res = await this.applicationRepository.delete(leave_id);
     if (res.affected === 0) {
-      throw new NotFoundException(`application with application id ${leave_id} not found`);
+      throw new NotFoundException(
+        `application with application id ${leave_id} not found`,
+      );
     }
-    return {message: `application with id ${leave_id} successfully removed from database`};
+    return {
+      message: `application with id ${leave_id} successfully removed from database`,
+    };
   }
 }

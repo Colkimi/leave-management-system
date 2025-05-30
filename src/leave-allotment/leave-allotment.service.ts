@@ -34,9 +34,7 @@ export class LeaveAllotmentService {
   async findall(search?: string) {
     if (search) {
       return this.allotmentRepository.find({
-        where: [
-          { leave_type: Like(`%${search}%`) },
-        ],
+        where: [{ leave_type: Like(`%${search}%`) }],
       });
     }
     return this.allotmentRepository.find();
@@ -49,17 +47,25 @@ export class LeaveAllotmentService {
     return allotment;
   }
 
-  async update(allotment_id: number, UpdateLeaveAllotmentDto: UpdateLeaveAllotmentDto) {
+  async update(
+    allotment_id: number,
+    UpdateLeaveAllotmentDto: UpdateLeaveAllotmentDto,
+  ) {
     const allotment = await this.allotmentRepository.findOne({
       where: { allotment_id },
     });
     if (!allotment) {
-      throw new NotFoundException(`allotment with id ${allotment_id} not found`);
+      throw new NotFoundException(
+        `allotment with id ${allotment_id} not found`,
+      );
     }
-    const leave_type = UpdateLeaveAllotmentDto.leave_type ?? allotment.leave_type;
-    const total_days = UpdateLeaveAllotmentDto.total_days ?? allotment.total_days;
-    const remaining_days = UpdateLeaveAllotmentDto.remaining_days ?? allotment.remaining_days;
-    [leave_type,total_days,remaining_days];
+    const leave_type =
+      UpdateLeaveAllotmentDto.leave_type ?? allotment.leave_type;
+    const total_days =
+      UpdateLeaveAllotmentDto.total_days ?? allotment.total_days;
+    const remaining_days =
+      UpdateLeaveAllotmentDto.remaining_days ?? allotment.remaining_days;
+    [leave_type, total_days, remaining_days];
     await this.allotmentRepository.findOne({ where: { allotment_id } });
     return this.allotmentRepository.save(UpdateLeaveAllotmentDto);
   }
@@ -67,8 +73,12 @@ export class LeaveAllotmentService {
   async remove(allotment_id: number) {
     const res = await this.allotmentRepository.delete(allotment_id);
     if (res.affected === 0) {
-      throw new NotFoundException(`allotment with allotment id ${allotment_id} not found`);
+      throw new NotFoundException(
+        `allotment with allotment id ${allotment_id} not found`,
+      );
     }
-    return {message: `allotment with id ${allotment_id} successfully removed from database`};
+    return {
+      message: `allotment with id ${allotment_id} successfully removed from database`,
+    };
   }
 }

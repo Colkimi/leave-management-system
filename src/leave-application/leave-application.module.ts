@@ -8,7 +8,10 @@ import { Faculty } from 'src/faculty/entities/faculty.entity';
 import { Allotment } from 'src/leave-allotment/entities/leave-allotment.entity';
 
 @Module({
-  imports: [ DatabaseModule,TypeOrmModule.forFeature([Application, Faculty,Allotment])],
+  imports: [
+    DatabaseModule,
+    TypeOrmModule.forFeature([Application, Faculty, Allotment]),
+  ],
   controllers: [LeaveApplicationController],
   providers: [LeaveApplicationService],
 })

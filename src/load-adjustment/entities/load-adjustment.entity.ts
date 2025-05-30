@@ -4,7 +4,7 @@ import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 export class LoadAdjustment {
   @PrimaryGeneratedColumn()
   adjustment_id: number;
-    
+
   @Column({
     type: 'timestamp',
     default: () => 'CURRENT_TIMESTAMP',
@@ -12,7 +12,7 @@ export class LoadAdjustment {
   })
   adjustment_date: Date;
 
-@Column({ type: 'varchar', length: 50 })
+  @Column({ type: 'varchar', length: 50 })
   adjustment_type: string;
 
   @Column()
@@ -20,5 +20,4 @@ export class LoadAdjustment {
 
   @Column({ type: 'varchar', length: 255 })
   status: string;
-
 }

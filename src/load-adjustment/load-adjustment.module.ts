@@ -6,7 +6,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { LoadAdjustment } from './entities/load-adjustment.entity';
 
 @Module({
-  imports: [ DatabaseModule, TypeOrmModule.forFeature([LoadAdjustment])],
+  imports: [DatabaseModule, TypeOrmModule.forFeature([LoadAdjustment])],
   controllers: [LoadAdjustmentController],
   providers: [LoadAdjustmentService],
 })

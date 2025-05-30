@@ -1,16 +1,22 @@
 import { Faculty } from 'src/faculty/entities/faculty.entity';
 import { Allotment } from 'src/leave-allotment/entities/leave-allotment.entity';
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  JoinColumn,
+} from 'typeorm';
 
 @Entity()
 export class Application {
- @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn()
   leave_id: number;
 
- @Column({ type: 'varchar', length: 50 })
+  @Column({ type: 'varchar', length: 50 })
   leave_type: string;
 
- @Column({
+  @Column({
     type: 'timestamp',
     default: () => 'CURRENT_TIMESTAMP',
     onUpdate: 'CURRENT_TIMESTAMP',
@@ -36,7 +42,9 @@ export class Application {
   })
   created_at: Date;
 
-  @ManyToOne(() => Faculty, faculty => faculty.leaveApplications, { nullable: true })
+  @ManyToOne(() => Faculty, (faculty) => faculty.leaveApplications, {
+    nullable: true,
+  })
   @JoinColumn({ name: 'faculty_id' })
   faculty: Faculty;
 
@@ -44,4 +52,3 @@ export class Application {
   @JoinColumn({ name: 'allotment_id' })
   allotment: Allotment;
 }
-

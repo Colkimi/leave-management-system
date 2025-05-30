@@ -49,7 +49,10 @@ export class LeaveHistoryService {
     return history;
   }
 
-  async update(history_id: number, UpdateLeaveHistoryDto: UpdateLeaveHistoryDto) {
+  async update(
+    history_id: number,
+    UpdateLeaveHistoryDto: UpdateLeaveHistoryDto,
+  ) {
     const history = await this.historyRepository.findOne({
       where: { history_id },
     });
@@ -66,8 +69,12 @@ export class LeaveHistoryService {
   async remove(history_id: number) {
     const res = await this.historyRepository.delete(history_id);
     if (res.affected === 0) {
-      throw new NotFoundException(`history with history id ${history_id} not found`);
+      throw new NotFoundException(
+        `history with history id ${history_id} not found`,
+      );
     }
-    return {message: `history with id ${history_id} successfully removed from database`};
+    return {
+      message: `history with id ${history_id} successfully removed from database`,
+    };
   }
 }

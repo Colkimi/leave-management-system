@@ -1,0 +1,66 @@
+@url = https://leave-management-qq3b.onrender.com
+
+### Seed the database
+POST {{url}}/seed
+Accept: application/json
+
+### Get all departments
+GET {{url}}/department
+Accept: application/json
+
+### Create a new department
+POST {{url}}/department
+Content-Type: application/json
+
+{
+  "department_name": "Test Department"
+}
+
+### Get all faculties
+GET {{url}}/faculty
+Accept: application/json
+
+### Create a new faculty
+POST {{url}}/faculty
+Content-Type: application/json
+
+{
+  "faculty_name": "Test Faculty",
+  "first_name": "John",
+  "last_name": "Doe",
+  "email": "john.doe@example.com",
+  "phone": "1234567890",
+  "status": "active"
+}
+
+### Get all leave applications
+GET {{url}}/leave-application
+Accept: application/json
+
+### Create a new leave application
+POST {{url}}/leave-application
+Content-Type: application/json
+
+{
+  "faculty_id": 1,
+  "leave_type": "Sick",
+  "start_date": "2025-06-01T00:00:00.000Z",
+  "end_date": "2025-06-05T00:00:00.000Z",
+  "status": "pending",
+  "reason": "Medical leave"
+}
+
+### Get all load adjustments
+GET {{url}}/load-adjustment
+Accept: application/json
+
+### Create a new load adjustment
+POST {{url}}/load-adjustment
+Content-Type: application/json
+
+{
+  "faculty_id": 1,
+  "adjustment_type": "increase",
+  "adjustment_hours": 2,
+  "status": "pending"
+}

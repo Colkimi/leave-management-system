@@ -30,9 +30,7 @@ export class DesignationService {
   async findall(search?: string) {
     if (search) {
       return this.designationRepository.find({
-        where: [
-          { designation_name: Like(`%${search}%`) },
-        ],
+        where: [{ designation_name: Like(`%${search}%`) }],
       });
     }
     return this.designationRepository.find();
@@ -45,14 +43,19 @@ export class DesignationService {
     return designation;
   }
 
-  async update(designation_id: number, UpdateDesignationDto: UpdateDesignationDto) {
+  async update(
+    designation_id: number,
+    UpdateDesignationDto: UpdateDesignationDto,
+  ) {
     const designation = await this.designationRepository.findOne({
       where: { designation_id },
     });
     if (!designation) {
-      throw new NotFoundException(`designation with id ${designation_id} not found`);
+      throw new NotFoundException(
+        `designation with id ${designation_id} not found`,
+      );
     }
-    const designation_name = UpdateDesignationDto.designation_name ;
+    const designation_name = UpdateDesignationDto.designation_name;
     [designation_name];
     await this.designationRepository.findOne({ where: { designation_id } });
     return this.designationRepository.save(UpdateDesignationDto);
@@ -61,8 +64,12 @@ export class DesignationService {
   async remove(designation_id: number) {
     const res = await this.designationRepository.delete(designation_id);
     if (res.affected === 0) {
-      throw new NotFoundException(`designation with designation id ${designation_id} not found`);
+      throw new NotFoundException(
+        `designation with designation id ${designation_id} not found`,
+      );
     }
-    return {message: `designation with designation id ${designation_id} successfully removed from database`};
+    return {
+      message: `designation with designation id ${designation_id} successfully removed from database`,
+    };
   }
 }

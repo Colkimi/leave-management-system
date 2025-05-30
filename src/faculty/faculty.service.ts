@@ -67,7 +67,7 @@ export class FacultyService {
     const email = UpdateFacultyDto.email ?? faculty.email;
     const phone = UpdateFacultyDto.phone ?? faculty.phone;
     const status = UpdateFacultyDto.status ?? faculty.status;
-    [faculty_name,first_name,last_name,email, phone, status];
+    [faculty_name, first_name, last_name, email, phone, status];
     await this.facultyRepository.findOne({ where: { faculty_id } });
     return this.facultyRepository.save(UpdateFacultyDto);
   }
@@ -75,8 +75,12 @@ export class FacultyService {
   async remove(faculty_id: number) {
     const res = await this.facultyRepository.delete(faculty_id);
     if (res.affected === 0) {
-      throw new NotFoundException(`faculty with faculty id ${faculty_id} not found`);
+      throw new NotFoundException(
+        `faculty with faculty id ${faculty_id} not found`,
+      );
     }
-    return {message: `faculty with id ${faculty_id} successfully removed from database`};
+    return {
+      message: `faculty with id ${faculty_id} successfully removed from database`,
+    };
   }
 }

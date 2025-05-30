@@ -30,9 +30,7 @@ export class DepartmentService {
   async findall(search?: string) {
     if (search) {
       return this.departmentRepository.find({
-        where: [
-          { department_name: Like(`%${search}%`) },
-        ],
+        where: [{ department_name: Like(`%${search}%`) }],
       });
     }
     return this.departmentRepository.find();
@@ -45,14 +43,19 @@ export class DepartmentService {
     return admin;
   }
 
-  async update(department_id: number, UpdateDepartmentDto: UpdateDepartmentDto) {
+  async update(
+    department_id: number,
+    UpdateDepartmentDto: UpdateDepartmentDto,
+  ) {
     const department = await this.departmentRepository.findOne({
       where: { department_id },
     });
     if (!department) {
-      throw new NotFoundException(`department with id ${department_id} not found`);
+      throw new NotFoundException(
+        `department with id ${department_id} not found`,
+      );
     }
-    const departmentname = UpdateDepartmentDto.department_name ;
+    const departmentname = UpdateDepartmentDto.department_name;
     [departmentname];
     await this.departmentRepository.findOne({ where: { department_id } });
     return this.departmentRepository.save(UpdateDepartmentDto);
@@ -61,8 +64,12 @@ export class DepartmentService {
   async remove(department_id: number) {
     const res = await this.departmentRepository.delete(department_id);
     if (res.affected === 0) {
-      throw new NotFoundException(`department with department id ${department_id} not found`);
+      throw new NotFoundException(
+        `department with department id ${department_id} not found`,
+      );
     }
-    return {message: `department with department id ${department_id} successfully removed from database`};
+    return {
+      message: `department with department id ${department_id} successfully removed from database`,
+    };
   }
 }

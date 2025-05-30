@@ -11,8 +11,6 @@ import { Application } from 'src/leave-application/entities/leave-application.en
 import { History } from 'src/leave-history/entities/leave-history.entity';
 import { LoadAdjustment } from 'src/load-adjustment/entities/load-adjustment.entity';
 
-
-
 @Injectable()
 export class SeedService {
   private readonly logger = new Logger(SeedService.name);
@@ -29,11 +27,11 @@ export class SeedService {
     @InjectRepository(Allotment)
     private readonly allotmentRepository: Repository<Allotment>,
     @InjectRepository(Application)
-    private  readonly applicationRepository: Repository<Application>,
+    private readonly applicationRepository: Repository<Application>,
     @InjectRepository(History)
-    private  readonly historyRepository: Repository<History>,
+    private readonly historyRepository: Repository<History>,
     @InjectRepository(LoadAdjustment)
-    private  readonly adjustmentRepository: Repository<LoadAdjustment>,
+    private readonly adjustmentRepository: Repository<LoadAdjustment>,
     private readonly dataSource: DataSource,
   ) {}
 
@@ -41,7 +39,6 @@ export class SeedService {
     this.logger.log('Starting the seeding process...');
 
     try {
-   
       await this.clearTables();
       const administrator: Administrator[] = [];
       const departments: Department[] = [];
@@ -52,8 +49,7 @@ export class SeedService {
       const histories: History[] = [];
       const adjustments: LoadAdjustment[] = [];
 
-      
-      await this.seedAdministrator( administrator);
+      await this.seedAdministrator(administrator);
       await this.seedDepartments(departments);
       await this.seedDesignations(designations);
       await this.seedFaculties(faculties);
@@ -76,7 +72,7 @@ export class SeedService {
     const adminData = [
       {
         username: 'admin',
-        password: 'admin123', 
+        password: 'admin123',
         email: 'admin@university.edu',
         role: 'System Administrator',
       },
@@ -145,7 +141,7 @@ export class SeedService {
     return departments;
   }
 
-    private async seedAllotments(allotments: Allotment[]) {
+  private async seedAllotments(allotments: Allotment[]) {
     this.logger.log('Seeding allotments...');
     const leaveType = [
       'Sick',
@@ -162,7 +158,10 @@ export class SeedService {
       const allotment = new Allotment();
       allotment.leave_type = type;
       allotment.total_days = faker.number.int({ min: 5, max: 30 });
-      allotment.remaining_days = faker.number.int({ min: 0, max: allotment.total_days });
+      allotment.remaining_days = faker.number.int({
+        min: 0,
+        max: allotment.total_days,
+      });
       allotments.push(await this.allotmentRepository.save(allotment));
     }
     this.logger.log(`Created ${allotments.length} leave allotments`);
@@ -196,8 +195,7 @@ export class SeedService {
     return designations;
   }
 
-
-private async seedFaculties(faculties: Faculty[]) {
+  private async seedFaculties(faculties: Faculty[]) {
     this.logger.log('Seeding faculties...');
     const facultyTitles = [
       'Administration',
@@ -225,11 +223,11 @@ private async seedFaculties(faculties: Faculty[]) {
     }
     this.logger.log(`Created ${faculties.length} faculties`);
     return faculties;
-}
+  }
   private async seedApplications(applications: Application[]) {
     this.logger.log('Seeding administrators...');
     const leaveData = [
-      { leave_type: 'Sick', status: 'active', },
+      { leave_type: 'Sick', status: 'active' },
       { leave_type: 'Casual', status: 'inactive' },
       { leave_type: 'Unpaid', status: 'active' },
       { leave_type: 'Annual', status: 'inactive' },
@@ -240,12 +238,15 @@ private async seedFaculties(faculties: Faculty[]) {
     ];
     const faculties = await this.facultyRepository.find();
     const allotments = await this.allotmentRepository.find();
-      for (const data of leaveData) {
+    for (const data of leaveData) {
       const application = new Application();
       application.leave_type = data.leave_type;
       application.status = data.status;
       application.start_date = faker.date.future();
-      application.end_date = faker.date.future({ years: 1, refDate: application.start_date });
+      application.end_date = faker.date.future({
+        years: 1,
+        refDate: application.start_date,
+      });
       application.reason = faker.lorem.sentence();
       application.faculty = faker.helpers.arrayElement(faculties);
       application.allotment = faker.helpers.arrayElement(allotments);
@@ -253,38 +254,60 @@ private async seedFaculties(faculties: Faculty[]) {
     }
     this.logger.log(`Created ${applications.length} applications`);
     return applications;
-
   }
 
   private async seedLeaveHistory(histories: History[]) {
-  this.logger.log('Seeding leave history...');
-  const faculties = await this.facultyRepository.find();
-  const leaveTypes = [
-    'Sick', 'Casual', 'Unpaid', 'Annual', 'Sabbatical', 'Violence', 'Holiday', 'Adoption'
-  ];
-  for (let i = 0; i < 10; i++) {
-    const history = new History();
-    history.leave_type = faker.helpers.arrayElement(leaveTypes);
-    history.start_date = faker.date.past();
-    history.end_date = faker.date.future({ years: 1, refDate: history.start_date });
-    history.status = faker.helpers.arrayElement(['approved', 'rejected', 'pending']);
-    histories.push(await this.historyRepository.save(history));
+    this.logger.log('Seeding leave history...');
+    const faculties = await this.facultyRepository.find();
+    const leaveTypes = [
+      'Sick',
+      'Casual',
+      'Unpaid',
+      'Annual',
+      'Sabbatical',
+      'Violence',
+      'Holiday',
+      'Adoption',
+    ];
+    for (let i = 0; i < 10; i++) {
+      const history = new History();
+      history.leave_type = faker.helpers.arrayElement(leaveTypes);
+      history.start_date = faker.date.past();
+      history.end_date = faker.date.future({
+        years: 1,
+        refDate: history.start_date,
+      });
+      history.status = faker.helpers.arrayElement([
+        'approved',
+        'rejected',
+        'pending',
+      ]);
+      histories.push(await this.historyRepository.save(history));
+    }
+    this.logger.log(`Created ${histories.length} leave history records`);
+    return histories;
   }
-  this.logger.log(`Created ${histories.length} leave history records`);
-  return histories;
-}
 
-private async seedLoadAdjustments(loadAdjustments: LoadAdjustment[]) {
-  this.logger.log('Seeding load adjustments...');
-  const faculties = await this.facultyRepository.find();
-  for (let i = 0; i < 10; i++) {
-    const adjustment = new LoadAdjustment();
-    adjustment.adjustment_type = faker.helpers.arrayElement(['increase', 'decrease']);
-    adjustment.adjustment_hours = faker.number.int({ min: 1, max: 8 });
-    adjustment.status = faker.helpers.arrayElement(['approved', 'pending', 'rejected']);
-    loadAdjustments.push(await this.adjustmentRepository.save(adjustment));
+  private async seedLoadAdjustments(loadAdjustments: LoadAdjustment[]) {
+    this.logger.log('Seeding load adjustments...');
+    const faculties = await this.facultyRepository.find();
+    for (let i = 0; i < 10; i++) {
+      const adjustment = new LoadAdjustment();
+      adjustment.adjustment_type = faker.helpers.arrayElement([
+        'increase',
+        'decrease',
+      ]);
+      adjustment.adjustment_hours = faker.number.int({ min: 1, max: 8 });
+      adjustment.status = faker.helpers.arrayElement([
+        'approved',
+        'pending',
+        'rejected',
+      ]);
+      loadAdjustments.push(await this.adjustmentRepository.save(adjustment));
+    }
+    this.logger.log(
+      `Created ${loadAdjustments.length} load adjustment records`,
+    );
+    return loadAdjustments;
   }
-  this.logger.log(`Created ${loadAdjustments.length} load adjustment records`);
-  return loadAdjustments;
-}
 }

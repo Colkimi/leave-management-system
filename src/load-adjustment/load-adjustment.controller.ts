@@ -22,7 +22,7 @@ export class LoadAdjustmentController {
     return this.loadAdjustmentService.create(createLoadAdjustmentDto);
   }
 
- @Get()
+  @Get()
   findAll(@Query('search') search?: string) {
     return this.loadAdjustmentService.findall(search);
   }

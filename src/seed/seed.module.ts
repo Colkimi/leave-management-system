@@ -12,8 +12,19 @@ import { History } from 'src/leave-history/entities/leave-history.entity';
 import { LoadAdjustment } from 'src/load-adjustment/entities/load-adjustment.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Administrator, Department, Designation, Faculty,Allotment,Application,History,LoadAdjustment])],
+  imports: [
+    TypeOrmModule.forFeature([
+      Administrator,
+      Department,
+      Designation,
+      Faculty,
+      Allotment,
+      Application,
+      History,
+      LoadAdjustment,
+    ]),
+  ],
   providers: [SeedService],
-  controllers: [SeedController]
+  controllers: [SeedController],
 })
 export class SeedModule {}
