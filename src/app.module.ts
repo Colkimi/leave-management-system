@@ -1,4 +1,4 @@
-import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
+import { Module, NestModule, MiddlewareConsumer, Inject } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { LoggerMiddleware } from './logger.middleware';
@@ -10,10 +10,15 @@ import { LeaveApplicationModule } from './leave-application/leave-application.mo
 import { LeaveAllotmentModule } from './leave-allotment/leave-allotment.module';
 import { LeaveHistoryModule } from './leave-history/leave-history.module';
 import { LoadAdjustmentModule } from './load-adjustment/load-adjustment.module';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { DatabaseModule } from './database/database.module';
 import { SeedModule } from './seed/seed.module';
 import { LogsModule } from './logs/logs.module';
+import { CacheInterceptor, CacheModule } from '@nestjs/cache-manager';
+import { createKeyv, Keyv } from '@keyv/redis';
+import { CacheableMemory } from 'cacheable';
+import { CacheModule as CustomCacheModule } from './cache/cache.module';
+
 
 @Module({
   imports: [
@@ -32,9 +37,31 @@ import { LogsModule } from './logs/logs.module';
     LoadAdjustmentModule,
     DatabaseModule,
     LogsModule,
+    CacheModule.registerAsync({
+      imports: [ ConfigModule],
+      inject: [ ConfigService],
+      isGlobal: true,
+      useFactory: ( configService: ConfigService)=>{
+        return{
+          stores: [
+            new Keyv({
+              store: new CacheableMemory({ ttl: 30000, lruSize: 5000 }),
+                }),
+            createKeyv(configService.getOrThrow<string>('REDIS_URL')),
+          ],
+        };
+      },
+    }),
+    CustomCacheModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
+    providers: [
+    {
+      provide: 'APP_INTERCEPTOR',
+      useClass: CacheInterceptor, // Global cache interceptor
+    },
+  ],
+
+  controllers: [],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

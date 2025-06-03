@@ -8,6 +8,16 @@ Accept: application/json
 GET {{url}}/department
 Accept: application/json
 
+### cache key and value
+POST {{url}}/cache
+Content-Type: application/json
+
+{
+  "key": "user_123",
+  "value": "John Doe Profile Data",
+  "ttl": 300
+}
+
 ### Create a new department
 POST {{url}}/department
 Content-Type: application/json
