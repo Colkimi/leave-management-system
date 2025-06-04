@@ -28,7 +28,7 @@ async function bootstrap() {
 
   await app.listen(PORT, () => {
     console.log(
-      `Server is running on url https://leave-management-qq3b.onrender.com`,
+      `Server is running on Port ${PORT}`,
     );
   });
 }

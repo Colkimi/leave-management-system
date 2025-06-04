@@ -10,6 +10,7 @@ import { Allotment } from 'src/leave-allotment/entities/leave-allotment.entity';
 import { Application } from 'src/leave-application/entities/leave-application.entity';
 import { History } from 'src/leave-history/entities/leave-history.entity';
 import { LoadAdjustment } from 'src/load-adjustment/entities/load-adjustment.entity';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class SeedService {
@@ -66,6 +67,11 @@ export class SeedService {
     }
   }
 
+  private async hashPassword(password: string): Promise<string> {
+    const salt = await bcrypt.genSalt(10);
+    return bcrypt.hash(password, salt);
+  }
+
   private async seedAdministrator(administrator: Administrator[]) {
     this.logger.log('Seeding administrators...');
     const admins: Administrator[] = [];
@@ -81,7 +87,7 @@ export class SeedService {
     for (const data of adminData) {
       const admin = new Administrator();
       admin.username = data.username;
-      admin.password = data.password;
+      admin.password = await this.hashPassword(data.password); // Hash the password
       admin.email = data.email;
       admin.role = data.role;
       admins.push(await this.administratorRepository.save(admin));

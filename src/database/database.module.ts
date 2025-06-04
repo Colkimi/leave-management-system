@@ -18,12 +18,12 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
         synchronize: configService.getOrThrow<boolean>('DB_SYNC', true),
         logging: configService.getOrThrow<boolean>('DB_LOGGING', false),
         migrations: [__dirname + '/../migrations/**/*{.ts,.js}'],
-        ssl: true,
-        extra: {
-          ssl: {
-            rejectUnauthorized: false,
-          },
-        },
+        // ssl: true,
+        // extra: {
+        //   ssl: {
+        //     rejectUnauthorized: false,
+        //   },
+        // },
       }),
       inject: [ConfigService],
     }),

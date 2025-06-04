@@ -1,4 +1,7 @@
 import { Module, NestModule, MiddlewareConsumer, Inject } from '@nestjs/common';
+import { APP_GUARD } from '@nestjs/core';
+import { AtGuard } from './auth/guards';
+import { AuthModule } from './auth/auth.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { LoggerMiddleware } from './logger.middleware';
@@ -38,23 +41,30 @@ import { CacheModule as CustomCacheModule } from './cache/cache.module';
     DatabaseModule,
     LogsModule,
     CacheModule.registerAsync({
-      imports: [ ConfigModule],
-      inject: [ ConfigService],
+      imports: [ConfigModule],
+      inject: [ConfigService],
       isGlobal: true,
-      useFactory: ( configService: ConfigService)=>{
-        return{
+      useFactory: (configService: ConfigService) => {
+          return {
+          ttl: 60000, // 60 sec: Cache time-to-live
           stores: [
             new Keyv({
               store: new CacheableMemory({ ttl: 30000, lruSize: 5000 }),
-                }),
+            }),
             createKeyv(configService.getOrThrow<string>('REDIS_URL')),
           ],
         };
       },
     }),
     CustomCacheModule,
+    AuthModule,
   ],
-    providers: [AppService,
+    providers: [
+    AppService,
+    {
+      provide: APP_GUARD,
+      useClass: AtGuard,
+    },
     {
       provide: 'APP_INTERCEPTOR',
       useClass: CacheInterceptor, // Global cache interceptor
@@ -79,3 +89,4 @@ export class AppModule implements NestModule {
       );
   }
 }
+

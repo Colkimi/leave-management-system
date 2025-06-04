@@ -11,11 +11,7 @@ export class CacheService {
     const { key, value, ttl } = createCacheMeDto;
 
     try {
-      // Set the value in cache with optional TTL
-      if (ttl) {
-        await this.cacheManager.set(key, value, ttl * 1000); // Convert seconds to milliseconds
-      }
-      await this.cacheManager.set(key, value); // Convert seconds to milliseconds
+      await this.cacheManager.set(key, value, ttl ? ttl * 1000 : undefined);
 
       return {
         success: true,

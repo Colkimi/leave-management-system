@@ -17,6 +17,9 @@ export class Administrator {
   @Column({ type: 'varchar', length: 50 })
   role: string;
 
+  @Column({ type: 'text', nullable: true, default: null })
+  hashedRefreshToken: string | null;
+
   @Column({
     type: 'timestamp',
     default: () => 'CURRENT_TIMESTAMP',

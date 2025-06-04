@@ -1,13 +1,4 @@
 import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-  ParseIntPipe,
-  Query,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -16,6 +7,7 @@ import { UpdateAdministratorDto } from './dto/update-administrator.dto';
 import { Like, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Administrator } from './entities/administrator.entity';
+import * as bcrypt from 'bcrypt';
 @Injectable()
 export class AdministratorService {
   constructor(
@@ -23,11 +15,30 @@ export class AdministratorService {
     private administratorRepository: Repository<Administrator>,
   ) {}
 
+  private async hashPassword(password: string): Promise<string> {
+    const salt = await bcrypt.genSalt(10);
+    return bcrypt.hash(password, salt);
+  }
+
   async create(createAdministratorDto: CreateAdministratorDto) {
-    await this.administratorRepository.findOne({
-      where: { admin_id: createAdministratorDto.admin_id },
-    });
-    return this.administratorRepository.save(createAdministratorDto);
+    // Check if admin_id exists if provided
+    if (createAdministratorDto.admin_id) {
+      await this.administratorRepository.findOne({
+        where: { admin_id: createAdministratorDto.admin_id },
+      });
+    }
+
+    // Hash the password before saving
+    const hashedPassword = await this.hashPassword(createAdministratorDto.password);
+    
+    // Create new administrator with hashed password
+    const administrator = new Administrator();
+    administrator.username = createAdministratorDto.username;
+    administrator.password = hashedPassword;
+    administrator.email = createAdministratorDto.email;
+    administrator.role = createAdministratorDto.role;
+
+    return this.administratorRepository.save(administrator);
   }
 
   async findall(search?: string) {

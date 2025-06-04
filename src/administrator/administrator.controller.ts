@@ -12,11 +12,13 @@ import {
 import { CreateAdministratorDto } from './dto/create-administrator.dto';
 import { UpdateAdministratorDto } from './dto/update-administrator.dto';
 import { AdministratorService } from './administrator.service';
+import { Public } from '../auth/decorators/public.decorator';
 
 @Controller('admin')
 export class AdministratorController {
   constructor(private readonly administratorService: AdministratorService) {}
 
+  @Public()
   @Post()
   create(@Body() createAdministratorDto: CreateAdministratorDto) {
     return this.administratorService.create(createAdministratorDto);

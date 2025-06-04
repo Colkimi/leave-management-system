@@ -1,15 +1,45 @@
-@url = https://leave-management-qq3b.onrender.com
+@url = http://localhost:3000
+
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjgsImVtYWlsIjoidGVzdGFkbWluQHVuaXZlcnNpdHkuZWR1IiwiaWF0IjoxNzQ5MDQ2NTE3LCJleHAiOjE3NDk2NTEzMTd9.VAuuwSm5VVMssvMxJO77mmhNRwxVqP8VWN1bApipVDI
+### Create a new administrator account
+POST {{url}}/admin
+Content-Type: application/json
+
+{
+    "username": "testadmin",
+    "password": "test123",
+    "email": "testadmin@university.edu",
+    "role": "admin"
+}
+
+### Sign in to get access token
+# @name signin
+POST {{url}}/auth/signin
+Content-Type: application/json
+
+{
+    "email": "testadmin@university.edu",
+    "password": "test123"
+}
+
 
 ### Seed the database
 POST {{url}}/seed
 Accept: application/json
 
-### Get all departments
-GET {{url}}/department
+### Get all admins (Protected Route)
+GET {{url}}/admin
+Authorization: Bearer {{accessToken}}
 Accept: application/json
 
-### cache key and value
+### Get all departments (Protected Route)
+GET {{url}}/department
+Authorization: Bearer {{accessToken}}
+Accept: application/json
+
+### Cache key and value (Protected Route)
 POST {{url}}/cache
+Authorization: Bearer {{accessToken}}
 Content-Type: application/json
 
 {
@@ -18,20 +48,27 @@ Content-Type: application/json
   "ttl": 300
 }
 
-### Create a new department
+### Sign out
+GET {{url}}/auth/signout/1
+Authorization: Bearer {{accessToken}}
+
+### Create a new department (Protected Route)
 POST {{url}}/department
+Authorization: Bearer {{accessToken}}
 Content-Type: application/json
 
 {
   "department_name": "Test Department"
 }
 
-### Get all faculties
+### Get all faculties (Protected Route)
 GET {{url}}/faculty
+Authorization: Bearer {{accessToken}}
 Accept: application/json
 
-### Create a new faculty
+### Create a new faculty (Protected Route)
 POST {{url}}/faculty
+Authorization: Bearer {{accessToken}}
 Content-Type: application/json
 
 {
@@ -43,12 +80,14 @@ Content-Type: application/json
   "status": "active"
 }
 
-### Get all leave applications
+### Get all leave applications (Protected Route)
 GET {{url}}/leave-application
+Authorization: Bearer {{accessToken}}
 Accept: application/json
 
-### Create a new leave application
+### Create a new leave application (Protected Route)
 POST {{url}}/leave-application
+Authorization: Bearer {{accessToken}}
 Content-Type: application/json
 
 {
@@ -60,12 +99,14 @@ Content-Type: application/json
   "reason": "Medical leave"
 }
 
-### Get all load adjustments
+### Get all load adjustments (Protected Route)
 GET {{url}}/load-adjustment
+Authorization: Bearer {{accessToken}}
 Accept: application/json
 
-### Create a new load adjustment
+### Create a new load adjustment (Protected Route)
 POST {{url}}/load-adjustment
+Authorization: Bearer {{accessToken}}
 Content-Type: application/json
 
 {
