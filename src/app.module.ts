@@ -54,14 +54,14 @@ import { CacheModule as CustomCacheModule } from './cache/cache.module';
     }),
     CustomCacheModule,
   ],
-    providers: [
+    providers: [AppService,
     {
       provide: 'APP_INTERCEPTOR',
       useClass: CacheInterceptor, // Global cache interceptor
     },
   ],
 
-  controllers: [],
+  controllers: [AppController],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
