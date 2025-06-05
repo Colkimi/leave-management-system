@@ -1,4 +1,7 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, OneToMany } from 'typeorm';
+import { Faculty } from 'src/faculty/entities/faculty.entity';
+import { Application } from 'src/leave-application/entities/leave-application.entity';
+import { LoadAdjustment } from 'src/load-adjustment/entities/load-adjustment.entity';
 
 @Entity()
 export class History {
@@ -30,4 +33,19 @@ export class History {
     default: () => 'CURRENT_TIMESTAMP',
   })
   created_at: Date;
+
+  @ManyToOne(() => Faculty, (faculty) => faculty.leaveHistory, {
+    nullable: false,
+  })
+  @JoinColumn({ name: 'faculty_id' })
+  faculty: Faculty;
+
+  @ManyToOne(() => Application, (application) => application.leaveHistory, {
+    nullable: false,
+  })
+  @JoinColumn({ name: 'leave_id' })
+  application: Application;
+
+    @OneToMany(() => LoadAdjustment, (loadAdjustment) => loadAdjustment.history)
+    loadAdjustments: LoadAdjustment[];
 }

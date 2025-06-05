@@ -105,14 +105,16 @@ export class SeedService {
     await queryRunner.startTransaction();
 
     try {
-      await queryRunner.query('DELETE FROM application');
-      await queryRunner.query('DELETE FROM allotment');
-      await queryRunner.query('DELETE FROM faculty');
-      await queryRunner.query('DELETE FROM designation');
-      await queryRunner.query('DELETE FROM department');
-      await queryRunner.query('DELETE FROM administrator');
-      await queryRunner.query('DELETE FROM history');
-      await queryRunner.query('DELETE FROM load_adjustment');
+      await queryRunner.query('TRUNCATE TABLE application RESTART IDENTITY CASCADE');
+      await queryRunner.query('TRUNCATE TABLE allotment RESTART IDENTITY CASCADE');
+
+      await queryRunner.query('TRUNCATE TABLE faculty RESTART IDENTITY CASCADE');
+      await queryRunner.query('TRUNCATE TABLE designation RESTART IDENTITY CASCADE');
+      await queryRunner.query('TRUNCATE TABLE department RESTART IDENTITY CASCADE');
+      await queryRunner.query('TRUNCATE TABLE administrator RESTART IDENTITY CASCADE');
+      await queryRunner.query('TRUNCATE TABLE history RESTART IDENTITY CASCADE');
+      await queryRunner.query('TRUNCATE TABLE load_adjustment RESTART IDENTITY CASCADE');
+
 
       await queryRunner.commitTransaction();
       this.logger.log('All tables cleared successfully');
@@ -159,6 +161,7 @@ export class SeedService {
       'Holiday',
       'Adoption',
     ];
+    const faculties = await this.facultyRepository.find();
 
     for (const type of leaveType) {
       const allotment = new Allotment();
@@ -168,6 +171,8 @@ export class SeedService {
         min: 0,
         max: allotment.total_days,
       });
+      // Assign a faculty to avoid null faculty_id error
+      allotment.faculty = faker.helpers.arrayElement(faculties);
       allotments.push(await this.allotmentRepository.save(allotment));
     }
     this.logger.log(`Created ${allotments.length} leave allotments`);
@@ -216,6 +221,8 @@ export class SeedService {
       'Recruitment',
       'Human Resource',
     ];
+    const departments = await this.departmentRepository.find();
+    const designations = await this.designationRepository.find();
 
     for (const title of facultyTitles) {
       const facultyEntity = new Faculty();
@@ -225,6 +232,9 @@ export class SeedService {
       facultyEntity.email = faker.internet.email();
       facultyEntity.phone = faker.phone.number();
       facultyEntity.status = 'active';
+      // Assign department and designation to avoid null foreign keys
+      facultyEntity.department = faker.helpers.arrayElement(departments);
+      facultyEntity.designation = faker.helpers.arrayElement(designations);
       faculties.push(await this.facultyRepository.save(facultyEntity));
     }
     this.logger.log(`Created ${faculties.length} faculties`);
@@ -243,8 +253,14 @@ export class SeedService {
       { leave_type: 'Adoption', status: 'inactive' },
     ];
     const faculties = await this.facultyRepository.find();
-    const allotments = await this.allotmentRepository.find();
-    for (const data of leaveData) {
+    const administrators = await this.administratorRepository.find();
+    let allotments = await this.allotmentRepository.find();
+
+    // Shuffle allotments to assign uniquely
+    allotments = allotments.sort(() => Math.random() - 0.5);
+
+    for (let i = 0; i < leaveData.length; i++) {
+      const data = leaveData[i];
       const application = new Application();
       application.leave_type = data.leave_type;
       application.status = data.status;
@@ -255,7 +271,20 @@ export class SeedService {
       });
       application.reason = faker.lorem.sentence();
       application.faculty = faker.helpers.arrayElement(faculties);
-      application.allotment = faker.helpers.arrayElement(allotments);
+
+      // Assign unique allotment if available
+      if (i < allotments.length) {
+        application.allotment = allotments[i];
+      } else {
+        // To satisfy type, assign a new Allotment or handle differently
+        // Here, we create a dummy allotment or skip assigning
+        // For now, skip assigning allotment to avoid null assignment error
+        // application.allotment = null;
+      }
+
+      // Assign an administrator to approvedBy to avoid null error
+      application.approvedBy = faker.helpers.arrayElement(administrators);
+
       applications.push(await this.applicationRepository.save(application));
     }
     this.logger.log(`Created ${applications.length} applications`);
@@ -265,6 +294,7 @@ export class SeedService {
   private async seedLeaveHistory(histories: History[]) {
     this.logger.log('Seeding leave history...');
     const faculties = await this.facultyRepository.find();
+    const applications = await this.applicationRepository.find();
     const leaveTypes = [
       'Sick',
       'Casual',
@@ -288,6 +318,10 @@ export class SeedService {
         'rejected',
         'pending',
       ]);
+      // Assign a faculty to avoid null faculty_id error
+      history.faculty = faker.helpers.arrayElement(faculties);
+      // Assign an application to avoid null leave_id error
+      history.application = faker.helpers.arrayElement(applications);
       histories.push(await this.historyRepository.save(history));
     }
     this.logger.log(`Created ${histories.length} leave history records`);
@@ -297,6 +331,13 @@ export class SeedService {
   private async seedLoadAdjustments(loadAdjustments: LoadAdjustment[]) {
     this.logger.log('Seeding load adjustments...');
     const faculties = await this.facultyRepository.find();
+    const administrators = await this.administratorRepository.find();
+    const departments = await this.departmentRepository.find();
+    const designations = await this.designationRepository.find();
+    const allotments = await this.allotmentRepository.find();
+    const histories = await this.historyRepository.find();
+    const applications = await this.applicationRepository.find();
+
     for (let i = 0; i < 10; i++) {
       const adjustment = new LoadAdjustment();
       adjustment.adjustment_type = faker.helpers.arrayElement([
@@ -309,6 +350,14 @@ export class SeedService {
         'pending',
         'rejected',
       ]);
+      adjustment.faculty = faker.helpers.arrayElement(faculties);
+      // Assign related entities to avoid null foreign keys
+      adjustment.administrator = faker.helpers.arrayElement(administrators);
+      adjustment.department = faker.helpers.arrayElement(departments);
+      adjustment.designation = faker.helpers.arrayElement(designations);
+      adjustment.allotment = faker.helpers.arrayElement(allotments);
+      adjustment.history = faker.helpers.arrayElement(histories);
+      adjustment.application = faker.helpers.arrayElement(applications);
       loadAdjustments.push(await this.adjustmentRepository.save(adjustment));
     }
     this.logger.log(

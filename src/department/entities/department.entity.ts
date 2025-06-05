@@ -1,4 +1,5 @@
 import { Faculty } from 'src/faculty/entities/faculty.entity';
+import { LoadAdjustment } from 'src/load-adjustment/entities/load-adjustment.entity';
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 
 @Entity()
@@ -17,4 +18,7 @@ export class Department {
 
   @OneToMany(() => Faculty, (faculty) => faculty.department)
   faculties: Faculty[];
+
+  @OneToMany(() => LoadAdjustment, (loadAdjustment) => loadAdjustment.department)
+  loadAdjustments: LoadAdjustment[];
 }

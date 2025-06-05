@@ -6,6 +6,7 @@ import {
   OneToMany,
   ManyToOne,
 } from 'typeorm';
+import { LoadAdjustment } from 'src/load-adjustment/entities/load-adjustment.entity';
 
 @Entity()
 export class Designation {
@@ -23,4 +24,7 @@ export class Designation {
 
   @OneToMany(() => Faculty, (faculty) => faculty.designation)
   faculties: Faculty[];
+
+  @OneToMany(() => LoadAdjustment, (loadAdjustment) => loadAdjustment.designation)
+  loadAdjustments: LoadAdjustment[];
 }

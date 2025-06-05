@@ -5,6 +5,7 @@ import {
   IsNumber,
   IsDateString,
 } from 'class-validator';
+
 export class CreateLeaveApplicationDto {
   @IsNumber()
   @IsOptional()
@@ -12,6 +13,12 @@ export class CreateLeaveApplicationDto {
 
   @IsNumber()
   faculty_id: number;
+
+  @IsNumber()
+  allotment_id: number;
+
+  @IsNumber()
+  approved_by: number;
 
   @IsString()
   @IsNotEmpty()

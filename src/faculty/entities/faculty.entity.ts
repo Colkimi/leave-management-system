@@ -2,6 +2,8 @@ import { Department } from 'src/department/entities/department.entity';
 import { Designation } from 'src/designation/entities/designation.entity';
 import { Allotment } from 'src/leave-allotment/entities/leave-allotment.entity';
 import { Application } from 'src/leave-application/entities/leave-application.entity';
+import { History } from 'src/leave-history/entities/leave-history.entity';
+import { LoadAdjustment } from 'src/load-adjustment/entities/load-adjustment.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -53,4 +55,10 @@ export class Faculty {
 
   @OneToMany(() => Allotment, (Allotment) => Allotment.faculty)
   leaveAllotments: Allotment[];
+
+  @OneToMany(() => History, (history) => history.faculty)
+  leaveHistory: History[];
+
+  @OneToMany(() => LoadAdjustment, (loadAdjustment) => loadAdjustment.faculty)
+  loadAdjustments: LoadAdjustment[];
 }

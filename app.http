@@ -1,6 +1,5 @@
 @url = http://localhost:3000
-
-eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjgsImVtYWlsIjoidGVzdGFkbWluQHVuaXZlcnNpdHkuZWR1IiwiaWF0IjoxNzQ5MDQ2NTE3LCJleHAiOjE3NDk2NTEzMTd9.VAuuwSm5VVMssvMxJO77mmhNRwxVqP8VWN1bApipVDI
+@accessToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjIsImVtYWlsIjoidGVzdGFkbWluQHVuaXZlcnNpdHkuZWR1IiwiaWF0IjoxNzQ5MDk4MzIzLCJleHAiOjE3NDkwOTkyMjN9.tuYbGHtsepmboMolQ6492bZZzpABICKYTEATlxsVwYE
 ### Create a new administrator account
 POST {{url}}/admin
 Content-Type: application/json
@@ -33,7 +32,7 @@ Authorization: Bearer {{accessToken}}
 Accept: application/json
 
 ### Get all departments (Protected Route)
-GET {{url}}/department
+GET {{url}}/designation
 Authorization: Bearer {{accessToken}}
 Accept: application/json
 

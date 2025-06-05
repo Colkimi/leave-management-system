@@ -6,11 +6,12 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Application } from './entities/leave-application.entity';
 import { Faculty } from 'src/faculty/entities/faculty.entity';
 import { Allotment } from 'src/leave-allotment/entities/leave-allotment.entity';
+import { Administrator } from 'src/administrator/entities/administrator.entity';
 
 @Module({
   imports: [
     DatabaseModule,
-    TypeOrmModule.forFeature([Application, Faculty, Allotment]),
+    TypeOrmModule.forFeature([Application, Faculty, Allotment,Administrator]),
   ],
   controllers: [LeaveApplicationController],
   providers: [LeaveApplicationService],

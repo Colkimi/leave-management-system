@@ -1,4 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import { Application } from 'src/leave-application/entities/leave-application.entity';
+import { LoadAdjustment } from 'src/load-adjustment/entities/load-adjustment.entity';
 
 @Entity()
 export class Administrator {
@@ -26,4 +28,10 @@ export class Administrator {
     onUpdate: 'CURRENT_TIMESTAMP',
   })
   last_login: Date;
+
+  @OneToMany(() => Application, (application) => application.approvedBy)
+  approvedApplications: Application[];
+
+    @OneToMany(() => LoadAdjustment, (loadAdjustment) => loadAdjustment.administrator)
+    loadAdjustments: LoadAdjustment[];
 }

@@ -9,9 +9,6 @@ export class CreateLoadAdjustmentDto {
   @IsOptional()
   adjustment_id?: number;
 
-  @IsNumber()
-  faculty_id: number;
-
   @IsDateString()
   adjustment_date: Date;
 

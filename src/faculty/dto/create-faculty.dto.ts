@@ -9,7 +9,7 @@ import {
 export class CreateFacultyDto {
   @IsNumber()
   @IsOptional()
-  faculty_id: number;
+  faculty_id?: number;
 
   @IsString()
   faculty_name: string;

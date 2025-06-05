@@ -13,6 +13,9 @@ export class CreateLeaveHistoryDto {
   @IsNumber()
   faculty_id: number;
 
+  @IsNumber()
+  leave_id: number;
+
   @IsString()
   leave_type: string;
 
