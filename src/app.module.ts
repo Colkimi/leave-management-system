@@ -1,9 +1,8 @@
 import { Module, NestModule, MiddlewareConsumer, Inject } from '@nestjs/common';
-import { APP_GUARD } from '@nestjs/core';
+import { APP_GUARD, Reflector } from '@nestjs/core';
 import { AtGuard } from './auth/guards';
+import { RolesGuard } from './auth/guards/role.guard';
 import { AuthModule } from './auth/auth.module';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { LoggerMiddleware } from './logger.middleware';
 import { AdministratorModule } from './administrator/administrator.module';
 import { DepartmentModule } from './department/department.module';
@@ -20,8 +19,12 @@ import { LogsModule } from './logs/logs.module';
 import { CacheInterceptor, CacheModule } from '@nestjs/cache-manager';
 import { createKeyv, Keyv } from '@keyv/redis';
 import { CacheableMemory } from 'cacheable';
-import { CacheModule as CustomCacheModule } from './cache/cache.module';
-
+import { HodModule } from './hod/hod.module';
+import { ProfileModule } from './profiles/profile.module';
+import { ThrottlerGuard } from '@nestjs/throttler';
+import { ThrottlerModule } from '@nestjs/throttler';
+import { EmailModule } from './notifications/email/email.module';
+ 
 
 @Module({
   imports: [
@@ -30,6 +33,7 @@ import { CacheModule as CustomCacheModule } from './cache/cache.module';
       envFilePath: '.env',
     }),
     AdministratorModule,
+    ProfileModule,
     DepartmentModule,
     DesignationModule,
     FacultyModule,
@@ -38,6 +42,7 @@ import { CacheModule as CustomCacheModule } from './cache/cache.module';
     LeaveAllotmentModule,
     LeaveHistoryModule,
     LoadAdjustmentModule,
+    HodModule,
     DatabaseModule,
     LogsModule,
     CacheModule.registerAsync({
@@ -45,7 +50,7 @@ import { CacheModule as CustomCacheModule } from './cache/cache.module';
       inject: [ConfigService],
       isGlobal: true,
       useFactory: (configService: ConfigService) => {
-          return {
+        return {
           ttl: 60000, // 60 sec: Cache time-to-live
           stores: [
             new Keyv({
@@ -56,28 +61,37 @@ import { CacheModule as CustomCacheModule } from './cache/cache.module';
         };
       },
     }),
-    CustomCacheModule,
     AuthModule,
+    HodModule,
+    ThrottlerModule.forRoot([{
+      ttl: 60000,
+      limit: 10,
+    }]),
+    EmailModule,
   ],
-    providers: [
-    AppService,
-    {
-      provide: APP_GUARD,
-      useClass: AtGuard,
-    },
+  providers: [
     {
       provide: 'APP_INTERCEPTOR',
-      useClass: CacheInterceptor, // Global cache interceptor
+      useClass: CacheInterceptor, // Global cache interceptor to cache responses
+    },
+    {
+      provide: APP_GUARD,
+      useClass: AtGuard, // Global guard to protect routes
+    },
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
     },
   ],
 
-  controllers: [AppController],
+  controllers: [],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(LoggerMiddleware)
       .forRoutes(
+        'user',
         'administrator',
         'department',
         'designation',
@@ -86,7 +100,7 @@ export class AppModule implements NestModule {
         'leave-application',
         'leave-history',
         'load-adjustment',
+        'hod',
       );
   }
 }
-

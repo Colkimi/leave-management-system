@@ -1,7 +1,9 @@
 import { Controller, Post, HttpStatus, HttpCode, Logger } from '@nestjs/common';
 import { SeedService } from './seed.service';
 import { Public } from '../auth/decorators/public.decorator';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('seed')
 @Controller('seed')
 export class SeedController {
   private readonly logger = new Logger(SeedController.name);

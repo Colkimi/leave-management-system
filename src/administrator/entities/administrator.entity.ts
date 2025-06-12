@@ -1,6 +1,16 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import { Role } from 'src/profiles/entities/profile.entity';
+import {
+  Column,
+  Entity,
+  PrimaryGeneratedColumn,
+  OneToMany,
+  OneToOne,
+  JoinColumn,
+  Relation
+} from 'typeorm';
 import { Application } from 'src/leave-application/entities/leave-application.entity';
 import { LoadAdjustment } from 'src/load-adjustment/entities/load-adjustment.entity';
+import { User } from 'src/profiles/entities/profile.entity';
 
 @Entity()
 export class Administrator {
@@ -9,15 +19,6 @@ export class Administrator {
 
   @Column({ type: 'varchar', length: 50 })
   username: string;
-
-  @Column({ type: 'varchar', length: 255 })
-  password: string;
-
-  @Column({ type: 'varchar', length: 255, nullable: false, unique: true })
-  email: string;
-
-  @Column({ type: 'varchar', length: 50 })
-  role: string;
 
   @Column({ type: 'text', nullable: true, default: null })
   hashedRefreshToken: string | null;
@@ -29,9 +30,16 @@ export class Administrator {
   })
   last_login: Date;
 
-  @OneToMany(() => Application, (application) => application.approvedBy)
+  @OneToOne(() => User, (user) => user.admin, {cascade: true})
+  @JoinColumn()
+  user: Relation<User>;
+
+  @OneToMany(() => Application, (application) => application.approvedByAdmin)
   approvedApplications: Application[];
 
-    @OneToMany(() => LoadAdjustment, (loadAdjustment) => loadAdjustment.administrator)
-    loadAdjustments: LoadAdjustment[];
+  @OneToMany(
+    () => LoadAdjustment,
+    (loadAdjustment) => loadAdjustment.administrator,
+  )
+  loadAdjustments: LoadAdjustment[];
 }

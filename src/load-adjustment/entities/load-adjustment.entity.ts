@@ -1,4 +1,10 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  JoinColumn,
+} from 'typeorm';
 import { Faculty } from 'src/faculty/entities/faculty.entity';
 import { Application } from 'src/leave-application/entities/leave-application.entity';
 import { Department } from 'src/department/entities/department.entity';
@@ -52,9 +58,13 @@ export class LoadAdjustment {
   @JoinColumn({ name: 'designation_id' })
   designation: Designation;
 
-  @ManyToOne(() => Administrator, (administrator) => administrator.loadAdjustments, {
-    nullable: true,
-  })
+  @ManyToOne(
+    () => Administrator,
+    (administrator) => administrator.loadAdjustments,
+    {
+      nullable: true,
+    },
+  )
   @JoinColumn({ name: 'admin_id' })
   administrator: Administrator;
 

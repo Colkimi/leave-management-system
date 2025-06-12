@@ -10,6 +10,7 @@ import { Allotment } from 'src/leave-allotment/entities/leave-allotment.entity';
 import { Application } from 'src/leave-application/entities/leave-application.entity';
 import { History } from 'src/leave-history/entities/leave-history.entity';
 import { LoadAdjustment } from 'src/load-adjustment/entities/load-adjustment.entity';
+import { Hod } from 'src/hod/entities/hod.entity';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { LoadAdjustment } from 'src/load-adjustment/entities/load-adjustment.ent
       Application,
       History,
       LoadAdjustment,
+      Hod,
     ]),
   ],
   providers: [SeedService],

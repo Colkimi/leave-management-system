@@ -1,9 +1,12 @@
+import { Role } from 'src/profiles/entities/profile.entity'; 
 import { Department } from 'src/department/entities/department.entity';
 import { Designation } from 'src/designation/entities/designation.entity';
+import { Hod } from 'src/hod/entities/hod.entity';
 import { Allotment } from 'src/leave-allotment/entities/leave-allotment.entity';
 import { Application } from 'src/leave-application/entities/leave-application.entity';
 import { History } from 'src/leave-history/entities/leave-history.entity';
 import { LoadAdjustment } from 'src/load-adjustment/entities/load-adjustment.entity';
+import { User } from 'src/profiles/entities/profile.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -11,6 +14,8 @@ import {
   ManyToOne,
   JoinColumn,
   OneToMany,
+  OneToOne,
+  Relation,
 } from 'typeorm';
 
 @Entity()
@@ -18,17 +23,17 @@ export class Faculty {
   @PrimaryGeneratedColumn()
   faculty_id: number;
 
+  @Column({ type: 'varchar', length: 50 })
+  username: string;
+
+  @Column({ type: 'varchar', length: 255 })
+  password: string;
+
+  @Column({ type: 'text', nullable: true, default: null })
+  hashedRefreshToken: string | null;
+
   @Column({ type: 'varchar', length: 255 })
   faculty_name: string;
-
-  @Column({ type: 'varchar', length: 50 })
-  first_name: string;
-
-  @Column({ type: 'varchar', length: 50 })
-  last_name: string;
-
-  @Column({ type: 'varchar', length: 255, nullable: false, unique: true })
-  email: string;
 
   @Column({ type: 'varchar', length: 255 })
   phone: string;
@@ -41,6 +46,20 @@ export class Faculty {
     default: () => 'CURRENT_TIMESTAMP',
   })
   created_at: Date;
+
+  @Column({
+    type: 'timestamp',
+    default: () => 'CURRENT_TIMESTAMP',
+    onUpdate: 'CURRENT_TIMESTAMP',
+  })
+  last_login: Date;
+
+  @OneToOne(() => Hod, (hod) => hod.faculty)
+  hod: Hod;
+
+  @OneToOne(() => User, (user) => user.admin, {cascade: true})
+  @JoinColumn()
+  user: Relation<User>;
 
   @ManyToOne(() => Department, (department) => department.faculties)
   @JoinColumn({ name: 'department_id' })
@@ -61,4 +80,5 @@ export class Faculty {
 
   @OneToMany(() => LoadAdjustment, (loadAdjustment) => loadAdjustment.faculty)
   loadAdjustments: LoadAdjustment[];
+
 }

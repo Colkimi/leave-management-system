@@ -7,9 +7,10 @@ import { Strategy, ExtractJwt } from 'passport-jwt';
 - How it works: Extracts the JWT from the Authorization header, verifies it with the secret key, and attaches the payload to the request
 */
 
-type JWTPayload = {
+export type JWTPayload = {
   sub: number;
   email: string;
+  role: string;
 };
 
 @Injectable()
@@ -21,7 +22,7 @@ export class AtStrategy extends PassportStrategy(Strategy, 'jwt-at') {
     });
   }
 
-  validate(payload: JWTPayload) {
-    return payload; // Return the payload directly, which contains user information (attach request.user = payload;)
+    async validate(payload: any) {
+    return payload;
   }
 }

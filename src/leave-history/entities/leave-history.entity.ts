@@ -1,4 +1,11 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, OneToMany } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  JoinColumn,
+  OneToMany,
+} from 'typeorm';
 import { Faculty } from 'src/faculty/entities/faculty.entity';
 import { Application } from 'src/leave-application/entities/leave-application.entity';
 import { LoadAdjustment } from 'src/load-adjustment/entities/load-adjustment.entity';
@@ -46,6 +53,6 @@ export class History {
   @JoinColumn({ name: 'leave_id' })
   application: Application;
 
-    @OneToMany(() => LoadAdjustment, (loadAdjustment) => loadAdjustment.history)
-    loadAdjustments: LoadAdjustment[];
+  @OneToMany(() => LoadAdjustment, (loadAdjustment) => loadAdjustment.history)
+  loadAdjustments: LoadAdjustment[];
 }

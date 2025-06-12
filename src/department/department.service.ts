@@ -1,26 +1,16 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-  ParseIntPipe,
-  Query,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateDepartmentDto } from './dto/create-department.dto';
 import { UpdateDepartmentDto } from './dto/update-department.dto';
 import { Like, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Department } from './entities/department.entity';
+import { Cache, CACHE_MANAGER } from '@nestjs/cache-manager';
 @Injectable()
 export class DepartmentService {
   constructor(
     @InjectRepository(Department)
     private departmentRepository: Repository<Department>,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
 
   async create(createDepartmentDto: CreateDepartmentDto) {
@@ -33,14 +23,28 @@ export class DepartmentService {
         where: [{ department_name: Like(`%${search}%`) }],
       });
     }
-    return this.departmentRepository.find();
-  }
+    const cached = await this.cacheManager.get<Department[]>('all_departments');
+    if (cached) {
+      return cached;
+    }
+    const department = await this.departmentRepository.find();
+        await this.cacheManager.set('all_departments', department);
+         return department;
+   }
 
   async findone(department_id: number) {
-    const admin = await this.departmentRepository.findOne({
+    const cacheKey = `department_${department_id}`;
+    const cached = await this.cacheManager.get<Department>(cacheKey);
+    if (cached) {
+      return cached;
+    }
+    const department = await this.departmentRepository.findOne({
       where: { department_id },
     });
-    return admin;
+    if (department) {
+      await this.cacheManager.set(cacheKey, department);
+    }
+    return department;
   }
 
   async update(
@@ -58,6 +62,9 @@ export class DepartmentService {
     const departmentname = UpdateDepartmentDto.department_name;
     [departmentname];
     await this.departmentRepository.findOne({ where: { department_id } });
+
+    await this.cacheManager.del('departments_all');
+    await this.cacheManager.del(`department_${department_id}`);
     return this.departmentRepository.save(UpdateDepartmentDto);
   }
 

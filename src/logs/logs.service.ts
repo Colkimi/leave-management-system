@@ -13,16 +13,19 @@ export class LogsService {
  }).format(new Date())} - IP: ${ip || 'unknown'} - ${entry}\n`;
 
     try {
-      const logsPath = path.join(__dirname, '..', '..', 'applogs');
+      // Use absolute path from process.cwd() for better reliability
+      const logsPath = path.join(process.cwd(), 'applogs');
       if (!existsSync(logsPath)) {
-        await fsPromises.mkdir(logsPath);
+        await fsPromises.mkdir(logsPath, { recursive: true });
       }
       await fsPromises.appendFile(
         path.join(logsPath, 'myLogFile.log'),
         formattedEntry,
       );
     } catch (e) {
-      if (e instanceof Error) console.error(e.message);
+      if (e instanceof Error) {
+        console.error('Error writing log file:', e.message);
+      }
     }
   }
 }

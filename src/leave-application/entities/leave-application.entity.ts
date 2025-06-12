@@ -1,4 +1,3 @@
-import { Faculty } from 'src/faculty/entities/faculty.entity';
 import { Allotment } from 'src/leave-allotment/entities/leave-allotment.entity';
 import { Administrator } from 'src/administrator/entities/administrator.entity';
 import { History } from 'src/leave-history/entities/leave-history.entity';
@@ -12,7 +11,19 @@ import {
   OneToMany,
   OneToOne,
 } from 'typeorm';
+import { Hod } from 'src/hod/entities/hod.entity';
+import { Faculty } from 'src/faculty/entities/faculty.entity';
 
+export enum LeaveType{
+  Casual = 'casual',
+  Sick = 'sick',
+  Unpaid = 'unpaid',
+  Annual = 'annual',
+  Sabbatical = 'sabbatical',
+  Violence = 'violence',
+  Holiday = 'holiday',
+  Adoption = 'adoption',
+}
 @Entity()
 export class Application {
   @PrimaryGeneratedColumn()
@@ -57,15 +68,24 @@ export class Application {
   @JoinColumn({ name: 'allotment_id' })
   allotment: Allotment;
 
-  @ManyToOne(() => Administrator, (administrator) => administrator.approvedApplications, {
-    nullable: false,
-  })
-  @JoinColumn({ name: 'approved_by' })
-  approvedBy: Administrator;
+  @ManyToOne(() => Administrator, (admin) => admin.approvedApplications, {
+  nullable: true,
+})
+@JoinColumn({ name: 'approved_by_admin' })
+approvedByAdmin: Administrator;
+
+ @ManyToOne(() => Hod, (hod) => hod.approvedApplications, {
+  nullable: true,
+ })
+ @JoinColumn({ name: 'approved_by_hod' })
+ approvedByHod: Hod;
 
   @OneToMany(() => History, (history) => history.application)
   leaveHistory: History[];
 
-  @OneToMany(() => LoadAdjustment, (loadAdjustment) => loadAdjustment.application)
+  @OneToMany(
+    () => LoadAdjustment,
+    (loadAdjustment) => loadAdjustment.application,
+  )
   loadAdjustments: LoadAdjustment[];
 }

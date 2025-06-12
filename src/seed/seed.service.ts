@@ -10,7 +10,9 @@ import { Allotment } from 'src/leave-allotment/entities/leave-allotment.entity';
 import { Application } from 'src/leave-application/entities/leave-application.entity';
 import { History } from 'src/leave-history/entities/leave-history.entity';
 import { LoadAdjustment } from 'src/load-adjustment/entities/load-adjustment.entity';
+import { Hod } from 'src/hod/entities/hod.entity';
 import * as bcrypt from 'bcrypt';
+import { Role } from 'src/profiles/entities/profile.entity';
 
 @Injectable()
 export class SeedService {
@@ -33,8 +35,10 @@ export class SeedService {
     private readonly historyRepository: Repository<History>,
     @InjectRepository(LoadAdjustment)
     private readonly adjustmentRepository: Repository<LoadAdjustment>,
+    @InjectRepository(Hod)
+    private readonly hodRepository: Repository<Hod>,
     private readonly dataSource: DataSource,
-  ) {}
+  ) { }
 
   async seed() {
     this.logger.log('Starting the seeding process...');
@@ -49,11 +53,13 @@ export class SeedService {
       const applications: Application[] = [];
       const histories: History[] = [];
       const adjustments: LoadAdjustment[] = [];
+      const hods: Hod[] = [];
 
       await this.seedAdministrator(administrator);
       await this.seedDepartments(departments);
       await this.seedDesignations(designations);
       await this.seedFaculties(faculties);
+      await this.seedHods(hods);
       await this.seedAllotments(allotments);
       await this.seedApplications(applications);
       await this.seedLeaveHistory(histories);
@@ -80,16 +86,12 @@ export class SeedService {
         username: 'admin',
         password: 'admin123',
         email: 'admin@university.edu',
-        role: 'System Administrator',
       },
     ];
 
     for (const data of adminData) {
       const admin = new Administrator();
       admin.username = data.username;
-      admin.password = await this.hashPassword(data.password); // Hash the password
-      admin.email = data.email;
-      admin.role = data.role;
       admins.push(await this.administratorRepository.save(admin));
     }
     this.logger.log(`Created ${admins.length} administrators`);
@@ -105,16 +107,31 @@ export class SeedService {
     await queryRunner.startTransaction();
 
     try {
-      await queryRunner.query('TRUNCATE TABLE application RESTART IDENTITY CASCADE');
-      await queryRunner.query('TRUNCATE TABLE allotment RESTART IDENTITY CASCADE');
-
-      await queryRunner.query('TRUNCATE TABLE faculty RESTART IDENTITY CASCADE');
-      await queryRunner.query('TRUNCATE TABLE designation RESTART IDENTITY CASCADE');
-      await queryRunner.query('TRUNCATE TABLE department RESTART IDENTITY CASCADE');
-      await queryRunner.query('TRUNCATE TABLE administrator RESTART IDENTITY CASCADE');
-      await queryRunner.query('TRUNCATE TABLE history RESTART IDENTITY CASCADE');
-      await queryRunner.query('TRUNCATE TABLE load_adjustment RESTART IDENTITY CASCADE');
-
+      await queryRunner.query(
+        'TRUNCATE TABLE application RESTART IDENTITY CASCADE',
+      );
+      await queryRunner.query(
+        'TRUNCATE TABLE allotment RESTART IDENTITY CASCADE',
+      );
+      await queryRunner.query(
+        'TRUNCATE TABLE history RESTART IDENTITY CASCADE',
+      );
+      await queryRunner.query(
+        'TRUNCATE TABLE load_adjustment RESTART IDENTITY CASCADE',
+      );
+      await queryRunner.query('TRUNCATE TABLE hod RESTART IDENTITY CASCADE');
+      await queryRunner.query(
+        'TRUNCATE TABLE faculty RESTART IDENTITY CASCADE',
+      );
+      await queryRunner.query(
+        'TRUNCATE TABLE designation RESTART IDENTITY CASCADE',
+      );
+      await queryRunner.query(
+        'TRUNCATE TABLE department RESTART IDENTITY CASCADE',
+      );
+      await queryRunner.query(
+        'TRUNCATE TABLE administrator RESTART IDENTITY CASCADE',
+      );
 
       await queryRunner.commitTransaction();
       this.logger.log('All tables cleared successfully');
@@ -226,10 +243,9 @@ export class SeedService {
 
     for (const title of facultyTitles) {
       const facultyEntity = new Faculty();
+      facultyEntity.username = `faculty_${faker.string.alphanumeric(8).toLowerCase()}`;
+      facultyEntity.password = await this.hashPassword('faculty123');
       facultyEntity.faculty_name = title;
-      facultyEntity.first_name = faker.person.firstName();
-      facultyEntity.last_name = faker.person.lastName();
-      facultyEntity.email = faker.internet.email();
       facultyEntity.phone = faker.phone.number();
       facultyEntity.status = 'active';
       // Assign department and designation to avoid null foreign keys
@@ -276,14 +292,11 @@ export class SeedService {
       if (i < allotments.length) {
         application.allotment = allotments[i];
       } else {
-        // To satisfy type, assign a new Allotment or handle differently
-        // Here, we create a dummy allotment or skip assigning
-        // For now, skip assigning allotment to avoid null assignment error
         // application.allotment = null;
       }
 
       // Assign an administrator to approvedBy to avoid null error
-      application.approvedBy = faker.helpers.arrayElement(administrators);
+      application.approvedByAdmin = faker.helpers.arrayElement(administrators);
 
       applications.push(await this.applicationRepository.save(application));
     }
@@ -364,5 +377,28 @@ export class SeedService {
       `Created ${loadAdjustments.length} load adjustment records`,
     );
     return loadAdjustments;
+  }
+
+  private async seedHods(hods: Hod[]) {
+    this.logger.log('Seeding HODs...');
+    const hodData = [
+      {
+        username: 'hod',
+        password: 'hod123',
+        email: 'hod@university.edu',
+      },
+    ];
+    const faculties = await this.facultyRepository.find();
+    const departments = await this.departmentRepository.find();
+
+    for (const data of hodData) {
+      const hod = new Hod();
+      hod.username = data.username;
+      hod.faculty = faker.helpers.arrayElement(faculties);
+      hod.department = faker.helpers.arrayElement(departments);
+      hods.push(await this.hodRepository.save(hod));
+    }
+    this.logger.log(`Created ${hods.length} HODs`);
+    return hods;
   }
 }

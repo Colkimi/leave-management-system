@@ -1,116 +1,267 @@
 @url = http://localhost:3000
-@accessToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjIsImVtYWlsIjoidGVzdGFkbWluQHVuaXZlcnNpdHkuZWR1IiwiaWF0IjoxNzQ5MDk4MzIzLCJleHAiOjE3NDkwOTkyMjN9.tuYbGHtsepmboMolQ6492bZZzpABICKYTEATlxsVwYE
-### Create a new administrator account
-POST {{url}}/admin
-Content-Type: application/json
+@admin_token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjE3LCJlbWFpbCI6ImFkbWluQGNvbXBhbnkuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzQ5NzEyMzY1LCJleHAiOjE3NDk3MTQxNjV9.nySE5iEeamVybo6KJNiKv8ZAS6W6_9XToXC_T7iPfPQ
+@faculty_token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjE0LCJlbWFpbCI6ImZhY3VsdHlAb3VyY29tcGFueS5jb20iLCJyb2xlIjoiZmFjdWx0eSIsImlhdCI6MTc0OTcwMzgyOCwiZXhwIjoxNzQ5NzA1NjI4fQ.jF1MiZkXksk2Wcw-F8rykoM96tMlqPUUHXUxyaVswgE
 
-{
-    "username": "testadmin",
-    "password": "test123",
-    "email": "testadmin@university.edu",
-    "role": "admin"
-}
+### Seed the database
+POST {{url}}/seed
 
-### Sign in to get access token
-# @name signin
+### get all departments
+GET {{url}}/department
+Authorization: Bearer {{admin_token}}
+
+### Get all designations
+GET {{url}}/designation
+Authorization: Bearer {{admin_token}}
+
+### Get all faculties
+GET {{url}}/faculty
+Authorization: Bearer {{admin_token}}
+
+### Get all leave applications
+GET {{url}}/leave-application
+Authorization: Bearer {{admin_token}}
+
+### Get all leave allotments
+GET {{url}}/leave-allotment
+Authorization: Bearer {{admin_token}}
+
+### Get all leave histories
+GET {{url}}/leave-history
+Authorization: Bearer {{admin_token}}
+
+### Get all leave histories
+GET {{url}}/load-adjustment
+Authorization: Bearer {{admin_token}}
+
+### Get all leave histories
+GET {{url}}/hod
+Authorization: Bearer {{admin_token}}
+
+### Admin login to get access token
 POST {{url}}/auth/signin
 Content-Type: application/json
 
 {
-    "email": "testadmin@university.edu",
-    "password": "test123"
+  "email": "newadmin1@example.com",
+  "password": "newpassword"
 }
 
-
-### Seed the database
-POST {{url}}/seed
-Accept: application/json
-
-### Get all admins (Protected Route)
+### Get all administrators (should succeed for admin)
 GET {{url}}/admin
-Authorization: Bearer {{accessToken}}
-Accept: application/json
+Authorization: Bearer {{admin_token}}
 
-### Get all departments (Protected Route)
-GET {{url}}/designation
-Authorization: Bearer {{accessToken}}
-Accept: application/json
+### Get one administrator by id (should succeed for admin)
+GET {{url}}/admin/1
+Authorization: Bearer {{admin_token}}
 
-### Cache key and value (Protected Route)
-POST {{url}}/cache
-Authorization: Bearer {{accessToken}}
+###  Create administrator (public route) 
+POST {{url}}/admin
 Content-Type: application/json
 
 {
-  "key": "user_123",
-  "value": "John Doe Profile Data",
-  "ttl": 300
+  "username": "administrator"
 }
 
-### Sign out
-GET {{url}}/auth/signout/1
-Authorization: Bearer {{accessToken}}
-
-### Create a new department (Protected Route)
-POST {{url}}/department
-Authorization: Bearer {{accessToken}}
+### Update administrator (should succeed for admin)
+PATCH {{url}}/admin/1
+Authorization: Bearer {{admin_token}}
 Content-Type: application/json
 
 {
-  "department_name": "Test Department"
+  "username": "updatedadmin"
 }
 
-### Get all faculties (Protected Route)
+### Delete administrator (should succeed for admin)
+DELETE {{url}}/admin/1
+Authorization: Bearer {{admin_token}}
+
+
+### Faculty Routes Tests
+
+### Faculty login to get access token
+POST {{url}}/auth/signin
+Content-Type: application/json
+
+{
+  "email": "newadmin1@example.com",
+  "password": "newpassword"
+}
+
+### Get all faculty (should succeed for faculty)
 GET {{url}}/faculty
-Authorization: Bearer {{accessToken}}
-Accept: application/json
+Authorization: Bearer {{faculty_token}}
 
-### Create a new faculty (Protected Route)
+### Get one faculty by id (should succeed for faculty)
+GET {{url}}/faculty/1
+Authorization: Bearer {{faculty_token}}
+
+### Create faculty (should succeed for faculty)
 POST {{url}}/faculty
-Authorization: Bearer {{accessToken}}
 Content-Type: application/json
 
 {
-  "faculty_name": "Test Faculty",
-  "first_name": "John",
-  "last_name": "Doe",
-  "email": "john.doe@example.com",
-  "phone": "1234567890",
-  "status": "active"
+  "faculty_id": 3,
+  "username": "faculty123",
+  "password": "securePassword123",
+  "faculty_name": "Human resource",
+  "first_name": "Elmira",
+  "last_name": "Hagenes",
+  "email": "elmira@ourcompany.com",
+  "phone": "+254 (7)12-34-56-78",
+  "department_id": 101,
+  "designation_id": 101,
+  "status": "active",
+  "role": "faculty"
+
 }
 
-### Get all leave applications (Protected Route)
-GET {{url}}/leave-application
-Authorization: Bearer {{accessToken}}
-Accept: application/json
-
-### Create a new leave application (Protected Route)
-POST {{url}}/leave-application
-Authorization: Bearer {{accessToken}}
+### Update faculty (should succeed for faculty)
+PATCH {{url}}/faculty/1
+Authorization: Bearer {{faculty_token}}
 Content-Type: application/json
 
 {
-  "faculty_id": 1,
-  "leave_type": "Sick",
-  "start_date": "2025-06-01T00:00:00.000Z",
-  "end_date": "2025-06-05T00:00:00.000Z",
-  "status": "pending",
-  "reason": "Medical leave"
+  "faculty_name": "Updated Faculty"
 }
 
-### Get all load adjustments (Protected Route)
-GET {{url}}/load-adjustment
-Authorization: Bearer {{accessToken}}
-Accept: application/json
+### Delete faculty (should succeed for faculty)
+DELETE {{url}}/faculty/1
+Authorization: Bearer {{faculty_token}}
 
-### Create a new load adjustment (Protected Route)
-POST {{url}}/load-adjustment
-Authorization: Bearer {{accessToken}}
+
+### HOD Routes Tests
+
+### HOD login to get access token
+POST {{url}}/auth/signin
 Content-Type: application/json
 
 {
-  "faculty_id": 1,
-  "adjustment_type": "increase",
-  "adjustment_hours": 2,
-  "status": "pending"
+  "email": "user@example.com",
+  "password": "securepassword123"
+}
+
+### signup to be able to login
+POST {{url}}/auth/signup
+Content-Type: application/json
+
+{
+   "firstName": "James",
+  "lastName": "Kawalia",
+  "email": "user@example.com",
+  "password": "securepassword123"
+}
+
+### Get all HODs (should succeed for admin)
+GET {{url}}/hod
+Authorization: Bearer {{admin_token}}
+
+### Get one HOD by id (should succeed for admin/HOD)
+GET {{url}}/hod/1
+Authorization: Bearer {{admin_token}}
+
+### Create HOD 
+POST {{url}}/hod
+Content-Type: application/json
+Authorization: Bearer {{admin_token}}
+{
+  "first_name": "New",
+  "last_name": "HOD",
+  "email": "newhod@example.com",
+  "password": "newpassword",
+  "facultyId": 1,
+  "departmentId": 1
+}
+
+### Update HOD (should succeed for admin/HOD)
+PATCH {{url}}/hod/1
+Authorization: Bearer {{admin_token}}
+Content-Type: application/json
+
+{
+  "first_name": "Updated"
+}
+
+### Delete HOD (should succeed for admin)
+DELETE {{url}}/hod/1
+Authorization: Bearer {{admin_token}}
+
+
+### Unauthorized Access Tests
+
+
+### Try to access admin route with faculty token (should fail)
+GET {{url}}/admin
+Authorization: Bearer {{faculty_token}}
+
+### Try to access faculty route with admin token (should fail)
+GET {{url}}/faculty
+Authorization: Bearer {{admin_token}}
+
+
+
+
+
+
+
+### Create Admin User
+POST {{url}}/user
+Content-Type: application/json
+
+{
+  "firstName": "Admin",
+  "lastName": "User",
+  "email": "admin@school.com",
+  "password": "admin123",
+  "role": "admin"
+}
+
+### Create Faculty User
+POST {{url}}/user
+Content-Type: application/json
+
+{
+  "firstName": "Faculty",
+  "lastName": "User",
+  "email": "faculty@ourcompany.com",
+  "password": "faculty123",
+  "role": "faculty"
+}
+
+### Create head of department
+POST {{url}}/user
+Content-Type: application/json
+
+{
+  "firstName": "head",
+  "lastName": "User",
+  "email": "hod@company.com",
+  "password": "hod123",
+  "role": "hod"
+}
+
+### Get Admin Token
+POST {{url}}/auth/signin
+Content-Type: application/json
+
+{
+  "email": "admin@company.com",
+  "password": "admin123"
+}
+
+### Get Faculty Token
+POST {{url}}/auth/signin
+Content-Type: application/json
+
+{
+  "email": "faculty@ourcompany.com",
+  "password": "faculty123"
+}
+
+### Get hod Token
+POST {{url}}/auth/signin
+Content-Type: application/json
+
+{
+  "email": "hod@company.com",
+  "password": "hod123"
 }

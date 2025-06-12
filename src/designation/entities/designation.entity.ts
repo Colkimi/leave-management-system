@@ -25,6 +25,9 @@ export class Designation {
   @OneToMany(() => Faculty, (faculty) => faculty.designation)
   faculties: Faculty[];
 
-  @OneToMany(() => LoadAdjustment, (loadAdjustment) => loadAdjustment.designation)
+  @OneToMany(
+    () => LoadAdjustment,
+    (loadAdjustment) => loadAdjustment.designation,
+  )
   loadAdjustments: LoadAdjustment[];
 }
