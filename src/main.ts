@@ -96,7 +96,7 @@ async function bootstrap() {
     .addTag('seed', 'seeding the database endpoint')
     .addBearerAuth()
     // .addApiKey({ type: 'apiKey', name: 'X-API-Key', in: 'header' }, 'api-key')
-    .addServer('http://localhost:3000')
+    .addServer(`http://localhost:${PORT}`)
     .addServer('https://deployedapp.com')
     .setVersion('1.0')
     .setTermsOfService('https://university.com/terms')
